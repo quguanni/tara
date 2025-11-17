@@ -1,0 +1,140 @@
+./tiger
+
+./tigexp -F security.report.d71-238.solano1.ucdavis.edu.010311-16\:40 > bbbb
+
+=====================
+
+Security scripts *** 2.0.9 ARC, 1999.0907.2100 ***
+Sun Mar 11 16:40:05 PST 2001
+16:40> Beginning security report for d71-238.solano1.ucdavis.edu (2000 Linux 2.2.16-22smp).
+
+# Performing check of passwd files...
+
+# Performing check of group files...
+
+# Performing check of user accounts...
+# Checking accounts from /etc/passwd.
+--WARN-- [acc001w] Login ID bin is disabled, but still has a valid shell.
+
+The listed login ID is disabled in some manner ('*' in passwd field, etc),
+but the login shell for the login ID is a valid shell (from /etc/shells
+or the system equivalent).  A valid shell can potentially enable the
+login ID to continue to be used.  The login shell should be changed to
+something that doesn't exist, or to something like /bin/false.
+
+( from /etc/passwd  -> bin:x:1:1:bin:/bin:   )
+
+--WARN-- [acc001w] Login ID daemon is disabled, but still has a valid shell.
+
+--WARN-- [acc001w] Login ID ftp is disabled, but still has a valid shell.
+
+--WARN-- [acc001w] Login ID gdm is disabled, but still has a valid shell.
+
+--WARN-- [acc001w] Login ID jenny is disabled, but still has a valid shell.
+
+--WARN-- [acc001w] Login ID kim is disabled, but still has a valid shell.
+
+--WARN-- [acc001w] Login ID lp is disabled, but still has a valid shell.
+
+--WARN-- [acc001w] Login ID mail is disabled, but still has a valid shell.
+
+--WARN-- [acc001w] Login ID root is disabled, but still has a valid shell.
+
+
+--WARN-- [acc006w] Login ID mail's home directory (/var/spool/mail) has group
+`mail' write access.
+
+The home directory of the listed login ID has group write permission,
+world write permission or both enabled.  This allows new files to be
+added (and existing files potentially removed) by others.  The write
+permissions should be removed.
+
+# Performing check of /etc/hosts.equiv and .rhosts files...
+pc2.cs.ucdavis.edu
+169.237.5.
+169.237.38.107
+169.237.39.20
+
+# Checking accounts from /etc/passwd...
+--WARN-- [rcmd006w] User buim's .rhosts file has group `users' readandgroup
+`users' write access.
+
+The indicated .rhosts file has permissions other than read and write
+for the owner of the file.  Allowing others to read the .rhosts file
+provides information about other "trusted" hosts which may allow them to
+compromise this host, the trusted hosts, or both.  The permissions should
+be at most read and write for the owner of the file.  Note that on some
+systems, because of network file systems, it is necessary to have world
+read access to the .rhosts file so that client machines can access the
+.rhosts file.  Most systems correctly handle this situation without the
+need for the world read access.  If yours does not, you should bring it
+to the attention of your vendor.
+
+--WARN-- [rcmd006w] User jenny's .rhosts file has group `root' and world read
+access.
+
+--WARN-- [rcmd006w] User kim's .rhosts file has group `root' read access.
+
+# Performing check of .netrc files...
+
+# Checking accounts from /etc/passwd...
+
+# Performing check of /etc/default/login, /securetty, and /etc/ttytab...
+
+
+# Performing check of anonymous FTP...
+--WARN-- [ftp006w] Anonymous FTP enabled, but directory does not exist.
+
+
+Anonymous ftp appears to be setup, but the directory indicated as the
+ftp directory does not exist.  This indicates either a misconfiguration
+or an old setup.  This should be corrected by either correcting the
+directory name, or deleting the ftp account.
+
+See CERT advisory CA-93:10 for information on setting up an anonymous
+FTP server.
+
+# Performing checks of mail aliases...
+
+# Performing check of 'services' and 'inetd'...
+# Checking services from /etc/services.
+--FAIL-- [inet002f] Service echo is assigned to port 4/ddp which should be
+7/tcp.
+
+The indicated service is assigned to the wrong port.  This indicates
+either a misconfiguration in the services database, or a possible sign
+of an intrusion.  This should be checked and corrected.  If it is not
+apparent why it is like this, the system should be checked for other
+signs of intrusion.
+
+--FAIL-- [inet002f] Service echo is assigned to port 4/ddp which should be
+7/udp.
+
+The indicated service is assigned to the wrong port.  This indicates
+either a misconfiguration in the services database, or a possible sign
+of an intrusion.  This should be checked and corrected.  If it is not
+apparent why it is like this, the system should be checked for other
+signs of intrusion.
+
+
+--FAIL-- [inet003f] The port for service imap is assigned to service imap2.
+
+The indicated port number is assigned to the wrong service.  This
+indicates either a misconfiguration in the services database, or a
+possible sign of an intrusion.  This should be checked and corrected.
+If it is not apparent why it is like this, the system should be checked
+for other signs of intrusion.
+
+
+# Checking inetd entries from /etc/inetd.conf
+
+# Performing NFS exports check...
+
+# Performing system specific checks...
+# Performing checks for Linux/2...
+# Running './scripts/check_sendmail'...
+
+# Checking sendmail...
+# Running './scripts/check_printcap'...
+
+# Checking printer configuration files...

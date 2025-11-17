@@ -1,0 +1,16 @@
+%cron001w
+The listed cron entry does not use a full pathname for the listed command
+(or if a shell is specified, the name of the shell script).  Full pathnames
+should be used for cron entries.
+%cron002
+The listed cron entry uses an executable or file which is not owned
+by the owner of the cron entry, and is also not owned by a system
+account (root or bin, etc).  For root cron entries, these are especially
+dangerous.  Note that the actual problem may be with a directory in
+the path to the file, not the file itself.
+%cron003
+The listed cron entry uses a file or executable which has group write
+permissions, world write permissions or both.  This can allow the
+system to be compromised.  For root cron entries, this is especially
+dangerous.  Note that the actual problem may be with a directory in
+the path to the file, not the file itself.

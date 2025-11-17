@@ -1,0 +1,29 @@
+#
+#  Script to convert doc/*.txt to html/*.html for -H option.
+#  Must re re-run after any change to any of the *.txt files
+#
+CNT=0
+set ../doc/*.txt
+while [ "$1" ]; do
+  OUTF=`echo $1 | sed -e "s/\.\.\/doc/..\/html/" | sed -e "s/\.txt/.html/"`
+  TITLE=`echo $1 | sed -e "s/\.\.\/doc\///" | sed -e "s/\.txt//"`
+  if [ $CNT -eq 1 ]; then
+   echo "<HR><PRE>" > $OUTF
+   echo >> $OUTF
+   echo >> $OUTF
+   echo >> $OUTF
+   echo >> $OUTF
+   echo >> $OUTF
+   echo >> $OUTF
+   echo >> $OUTF
+   echo >> $OUTF
+   echo "</PRE><HR>" >> $OUTF
+  else
+   echo "<HR>" > $OUTF
+  fi
+  echo "<CENTER><H2> Documents for $TITLE</H2></CENTER>" >> $OUTF
+  cat $1 | sh convert2html >> $OUTF
+  echo "Doing $1"
+ shift
+ CNT=1
+done

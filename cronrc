@@ -1,0 +1,29 @@
+#
+# Sample 'tigercron' cronrc file...
+#
+# By running 'tigercron' from 'cron' say, once an hour:
+#
+# 0 * * * * .../tigercron >/dev/null 2>&1
+#
+# You can run the different checks in stages, without having to
+# clutter up the crontab for root.
+#
+#------------------------------------------------------------------------
+#
+# Field 1:  Comma separated list of hours (0-23) or '*' when this should
+#           be run.
+#
+# Field 2:  Comma separated list of days of month or '*' when this should
+#           be run.
+#
+# Field 3:  Comma separated list of days of week or '*' when this should
+#           be run.  Days of week must be exactly as 'date' prints.
+#
+# Remaining fields:  Scripts to execute
+#
+0,8,16 * *	check_known
+2 * *		check_accounts check_rhosts check_netrc check_anonftp
+1 * *		check_perms check_signatures check_group check_passwd
+3 * Mon		check_inetd check_exports check_aliases check_path check_cron
+2 * Sun         find_files
+2 1 *           crack_run

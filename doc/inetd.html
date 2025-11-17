@@ -1,0 +1,239 @@
+<H3><CENTER>INETD Document</CENTER</H3>
+<A NAME="inet001e">
+One or the other of the two listed files are unavailable.  These
+files are required for the checks to proceed.  This either indicates
+an incorrect configuration, or that a port to this machine has not
+been completed.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+<A NAME="inet002f">
+The indicated service is assigned to the wrong port.  This indicates
+either a misconfiguration in the services database, or a possible
+sign of an intrusion.  This should be checked and corrected.  If it
+is not apparent why it is like this, the system should be checked
+for other signs of intrusion.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet003f">
+The indicated port number is assigned to the wrong service.  This
+indicates either a misconfiguration in the services database, or a
+possible sign of an intrusion.  This should be checked and corrected.
+If it is not apparent why it is like this, the system should be
+checked for other signs of intrusion.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet004i">
+The indicated service has been added to the services database
+as distributed.  These are normal output, but you should be
+familiar with what is there, and note any changes.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet005w">
+'inetd' is using the indicated binary for the listed service instead
+of what is normally expected there.  Unexpected differences should
+be checked, and if anything unusual is found, the system should
+be checked for other signs of intrusion.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet006f">
+The 'rexd' service is very insecure and should never be enabled.
+It should be disabled immediately by editing the inetd.conf file
+and removing the 'rexd' entry, and sending a HUP signal to the
+'inetd' process.  For AIX systems, CERT Advisory CA-92:05 is applicable.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet007w">
+'inetd' is using the indicated executable for a port other than
+what would normally be expected for this port.  This may indicate
+a backdoor into the system and should be checked.  If anything
+unusual is found, the system should be checked for other signs
+of intrusion.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet008">
+The owner of the indicated executable is not 'root'.  The owner
+of the executable should be root in order to reduce the possibility
+of it being altered or replaced.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet009">
+The indicated executable is group writable, world writable or both.
+The executable should be owned by root and writable only by the
+owner.  This reduces the possibility of it being altered  or replaced.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet010i">
+The program listed in the `inetd' configuration file does not
+exist or is not executable.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet011i">
+The listed entry is a local addition to the `inetd.conf' file.
+This should be checked to see if it is a valid addition.  If it
+is not, it should be removed.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet012w">
+sysstat enabled. It should be disabled or access restricted.
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet013w">
+netstat enabled. It should be disabled or access restricted.o<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+
+<A NAME="inet014i">
+The listed entry is protected by tcp wrappers.  This is a good thing!
+<HR><PRE>
+
+
+
+
+
+
+
+
+
+
+</PRE>
+

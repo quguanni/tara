@@ -1,0 +1,63 @@
+FILES:
+
+README_kuang_client_server  
+
+kuang     
+init_kuang  
+src/
+  addto.c  clearfiles.c  filewriters.c  members.c   tilde.c
+
+
+add_R_users.c  
+header.h    
+client.c       
+makefile  
+server.c  
+part2     
+process_success_files.c
+
+=============================================
+DO THE FOLLOWINGS TO TEST CLIENT-SERVER-KUANG:
+
+
+I) ON SERVER MACHINE
+  1/ file kuang, comment out the last line, if 
+     don't want this server to send request to another server: 
+	#./part2
+
+  2/ File init_kuang can have no goal initially
+
+II) ON CLIENT MACHINE
+  1/ file kuang: must have 
+ 	./part2
+
+  2/ create ~user/.rhosts file
+	Example: ~userA/.rhosts
+			machine1 userA
+			machine1 userB
+			machine2 userC
+
+  3/ File init_kuang must have goal initially
+
+
+III) TO RUN:
+  1/ On server site, type:
+	./k_server &
+
+  2/ On client site, type:
+	./kuang
+
+IV) RESULTS:
+
+  See file Success 
+
+===================================================
+Kuang intergrated in tara.
+
+TO RUN: 
+ 1/ Follow steps I to III above
+ 2/ Then type
+ 	./tiger
+
+RESULT:
+ See file security.report....

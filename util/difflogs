@@ -1,0 +1,123 @@
+#!/bin/sh
+#
+#     tiger - A UN*X security checking system
+#     Copyright (C) 1993 Douglas Lee Schales, David K. Hess, David R. Safford
+#
+#     Please see the file `COPYING' for the complete copyright notice.
+#
+# difflogs - 06/16/93
+#
+#-----------------------------------------------------------------------------
+#
+
+oldfile="$1"
+newfile="$2"
+
+SPC="$DIFFD"
+
+[ ! -n "$DIFF" ] && {
+  $CAT $newfile
+  exit 0
+}
+
+if [ -s $oldfile ]; then
+  $DIFF -D${SPC}TIGERCHANGES $oldfile $newfile |
+  {
+    lastcontext=
+    newflag=0
+    listing=0
+    while read line
+    do
+      case "$line" in
+	'#ifdef TIGERCHANGES') {
+	  newflag=2
+	}
+	;;
+	'#endif TIGERCHANGES') [ $newflag -eq 2 ] && newflag=1;;
+	'#ifndef TIGERCHANGES') newflag=0;;
+	'#else TIGERCHANGES') {
+	  if [ $newflag -eq 2 ]; then
+	    newflag=1
+	  else
+	    [ -n "$lastcontext" ] && echo "$lastcontext"
+	    lastcontext=
+	    [ $newflag -ne 0 -a -s $WORKDIR/tc.msg.$$ ] && {
+	      $CAT $WORKDIR/tc.msg.$$
+	      > $WORKDIR/tc.msg.$$
+	    }
+	    newflag=2
+	  fi
+	}
+	;;
+	\#*) {
+	  listing=0
+	  if [ $newflag -eq 2 ]; then
+	    echo "$line"
+	  elif [ $newflag -eq 1 ]; then
+	    [ -s $WORKDIR/tc.msg.$$ ] && $CAT $WORKDIR/tc.msg.$$
+	    > $WORKDIR/tc.msg.$$
+	    newflag=0
+	    lastcontext="$line"
+	  else
+	    lastcontext="$line"
+	  fi
+	  > $WORKDIR/tc.msg.$$
+	}
+      ;;
+      --[A-Z]*:) {
+	listing=1
+	if [ $newflag -eq 2 ]; then
+	  [ -n "$lastcontext" ] && echo "$lastcontext"
+	  lastcontext=
+	  > $WORKDIR/tc.msg.$$
+	  echo ">$line"
+	elif [ $newflag -eq 1 ]; then
+	  > $WORKDIR/tc.msg.$$
+	  echo " $line" >> $WORKDIR/tc.msg.$$
+	  newflag=0
+	else
+	  > $WORKDIR/tc.msg.$$
+	  echo " $line" >> $WORKDIR/tc.msg.$$
+	fi
+	}
+	;;
+      --[A-Z]*) {
+	listing=0
+	if [ $newflag -eq 2 ]; then
+	  [ -n "$lastcontext" ] && echo "$lastcontext"
+	  lastcontext=
+	  > $WORKDIR/tc.msg.$$
+	  echo ">$line"
+	elif [ $newflag -eq 1 ]; then
+	  > $WORKDIR/tc.msg.$$
+	  echo " $line" >> $WORKDIR/tc.msg.$$
+	  newflag=0
+	else
+	  > $WORKDIR/tc.msg.$$
+	  echo " $line" >> $WORKDIR/tc.msg.$$
+	fi
+	}
+	;;
+	*) {
+	  if [ $newflag -eq 2 ]; then
+	    [ -n "$lastcontext" ] && echo "$lastcontext"
+	    lastcontext=
+	    [ -s $WORKDIR/tc.msg.$$ ] && {
+	      $CAT $WORKDIR/tc.msg.$$
+	      > $WORKDIR/tc.msg.$$
+	    }
+	    echo ">$line"
+	  elif [ $newflag -eq 1 ]; then
+	    [ $listing -ne 1 ] && echo " $line" >> $WORKDIR/tc.msg.$$
+	  else
+	    [ $listing -ne 1 ] && echo " $line" >> $WORKDIR/tc.msg.$$
+	  fi
+	}
+        ;;
+      esac
+    done
+    $RM -f $WORKDIR/tc.msg.$$
+  }      
+else
+  $CAT $newfile
+fi

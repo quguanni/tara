@@ -1,0 +1,10 @@
+#
+#@DEST=SunOS/5/5.1/i386
+#@CONFIG=SunOS/5
+#
+Y .       /usr/lib/sendmail 82f4b48f07ee385b9756a7376178cd8b Sun Patch ID 101352-01
+Y .       /usr/lib/sendmail.mx 0f9a08563c5f5c9e681d7166a2857217 Sun Patch ID 101352-01
+Y .       /usr/lib/sendmail 0f9a08563c5f5c9e681d7166a2857217 Sun Patch ID 101352-01
+#
+Y .       /usr/sbin/tar 4b05a7ac7906123708a026fbb3f583c6 Sun Patch ID 101352-01
+Y .       /usr/sbin/static/tar b8c64ffb84aa474387ab10106c9a79dd Sun Patch ID 101352-01

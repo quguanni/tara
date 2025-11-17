@@ -1,0 +1,53 @@
+#! /bin/sh
+
+
+SH=/bin/sh
+MV=/bin/mv
+TEST=/usr/bin/test
+ECHO=/bin/echo
+AWK=/bin/awk
+RM=/bin/rm
+
+
+# file1 will have format: 
+#	user machine_name
+grep RHOSTS Success | awk '{print $4}' | tr '@' ' ' > file1
+
+
+lines=1
+while $TEST "1"
+do
+  	rline=`$AWK '{if (NR=="'$lines'") print $0}' file1`
+        lines=`expr $lines + 1`
+
+     	if $TEST -z "$rline"; then
+            	break;
+   	fi
+
+  	r_user=`$ECHO $rline | $AWK '{print $1}'`
+  	r_machine=`$ECHO $rline | $AWK '{print $2}'`
+
+	./add_R_users $r_user $r_machine	## use r_machine as a file name
+					        ## and append r_user to this file
+
+done
+
+
+machine_lists=`ls -1 temp_dir_`
+for machine in $machine_lists
+do	# client sends a file containing remote user names to server
+	./k_client $machine temp_dir_/$machine
+done
+
+#============ READ SUCCESS FILES AND APPEND TO A SINGLE FILE =========
+
+machine_lists=`ls -1 temp_dir_`
+for machine in $machine_lists
+do
+	./process_success_files $machine
+done
+
+# remove temp files
+rm -f file1 temp_dir_/*
+ 
+

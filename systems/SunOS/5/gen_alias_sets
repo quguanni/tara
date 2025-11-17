@@ -1,0 +1,76 @@
+#!/bin/sh
+#
+#     tiger - A UN*X security checking system
+#     Copyright (C) 1993 Douglas Lee Schales, David K. Hess, David R. Safford
+#
+#     Please see the file `COPYING' for the complete copyright notice.
+#
+# SunOS/5/gen_alias_sets - 06/14/93
+#
+#-----------------------------------------------------------------------------
+#
+
+INPUTS=`
+$GREP '^passwd' /etc/nsswitch.conf |
+$AWK '{
+       for(i=2;i<=NF;i++)
+          print $i
+      }'
+`
+
+for source in $INPUTS
+do
+  case $source in
+    files)
+        scf=$SENDMAILCF
+	[ ! -n "$scf" ] && scf=/etc/mail/sendmail.cf
+	aliasset="`$GREP '^OA' $scf | $SED -e 's/^OA//' -e 's/,/ /g'`"
+	[ ! -n "$aliasset" ] && aliasset=/etc/mail/aliases
+        c=0
+	for alifile in $aliasset
+	do
+	  $GREP -v '^#' $alifile |
+	  $SORT > $WORKDIR/etc_aliases.$c.$$
+	  echo "$alifile" > $WORKDIR/etc_aliases.$c.$$.src
+	  echo $WORKDIR/etc_aliases.$c.$$
+	  c="`$EXPR $c + 1`"
+	done
+        [ "$SERVERCHECK" = "Y" ] && {
+	  $GETCLIENTDIRS |
+	  while read client dir
+	  do
+	    [ -f "$dir/etc/mail/aliases" ] && {
+	      $GREP -v '^#' $dir/mail/etc/aliases |
+	      $SORT > $WORKDIR/aliases.$$.$client
+	      echo "$client:/etc/mail/aliases" > $WORKDIR/aliases.$$.$client.src
+	      echo $WORKDIR/aliases.$$.$client
+	    }
+	    [ -f "$dir/etc/aliases" -a ! -h $dir/etc/aliases ] && {
+	      $GREP -v '^#' $dir/etc/aliases |
+	      $SORT > $WORKDIR/aliases.$$.$client
+	      echo "$client:/etc/aliases" > $WORKDIR/aliases.$$.$client.src
+	      echo $WORKDIR/aliases.$$.$client
+	    }
+	  done
+	}
+	;;
+    nis)
+	[ -n "$YP" ] && {
+	  $YPCAT -k aliases |
+	  $SED -e 's/ /:/' | 
+	  $SORT |
+	  $COMM -23 - $WORKDIR/etc_aliases.$$ > $WORKDIR/nis_aliases.$$
+	  echo "NIS" > $WORKDIR/nis_aliases.$$.src
+	  echo $WORKDIR/nis_aliases.$$
+	}
+	 ;;
+    nisplus)
+        $NISCAT mail_aliases.org_dir > $WORKDIR/nisplus_aliases.$$
+	echo "NIS+" > $WORKDIR/nisplus_passwd.$$.src
+	echo "$WORKDIR/nisplus_passwd.$$"
+         ;;
+    *)
+         ;;
+  esac
+done
+

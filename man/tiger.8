@@ -1,0 +1,82 @@
+.\" @(#)tiger.8 1.00 93/06/04 TAMUSCC;
+.TH TIGER 8 "02 Jun 1999" "Security" "Administrator Commands"
+.SH NAME
+tiger \- UNIX Security Checker
+.SH SYNONPSIS
+.B "tiger [-B tigerdir] [-l logdir] [-w workdir] [-b bindir] [-e|-E] [-H] [-S] [-c tigerrc]"
+.LP
+.SH DESCRIPTION
+.LP
+Tiger is a package consisting of Bourne Shell scripts, C code and
+data files which is used for checking for security problems on a
+UNIX system.  It scans system configuration files, file systems,
+and user configuration files for possible security problems and
+reports them.  The command
+.B tigexp(8)
+can be used to obtain explanations of the problems reported by
+.I tiger.
+.SS OPTIONS
+.TP
+.I "\-B"
+Specify the directory where
+.I tiger
+is installed.  If not specified, the current directory is used.
+.TP
+.I "\-d"
+Specify the name of the directory where
+.I tiger
+will write the security report.  This defaults to the current directory.
+The filename of the report will
+be of the form 
+.RI 'security.report. hostname.date.time.'
+.TP
+.I "\-w"
+Specify a directory to use for creating scratch files.  This defaults
+to
+.I /tmp.
+.TP
+.I "\-b"
+Specify the directory which contains (or will contain) the binaries
+generated from the C modules.  If the systems directories contain
+all the binaries, they will be used directly from there.  If not,
+then if the
+.I bindir
+contains the binaries, these will be used.  If none are found in
+either place, then an attempt will be made to compile the C code
+and install the executables into the
+.I bindir.
+.TP
+.I "\-c"
+Specify an alternate name for the
+.I tigerrc
+control file.  The default is 'tigerrc'.
+.TP
+.I "\-e"
+This option will cause explanations to be inserted into the security
+report following each message.  This can greatly increase the size
+of the report, as explanations may appear repeatedly.
+.TP
+.I "\-E"
+This option indicates that a separate explanation report should be
+created, with explanations for each type of message only appearing
+once.  The filename of the explanation report will be of the form
+.RI 'explain.report. hostname.date.time.'
+.TP 
+.I "\-H"
+This option will format the report into HTML creating local links
+to the problem descriptions.
+.TP
+.I "\-S"
+This option indicates that a surface level check of the configuration
+files of any diskless clients served by this machine should be checked
+at the same time.  The checks will not be as in depth as they would be
+if run on the client itself.
+.LP
+.SH SEE ALSO
+tigexp(8), tigerrc(8)
+.LP
+.SH BUGS
+There are a lot more things to check.
+.LP
+Some places in the package are not shell meta-character or white-space
+safe.

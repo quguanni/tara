@@ -1,0 +1,52 @@
+#!/bin/sh
+#
+#     tiger - A UN*X security checking system
+#     Copyright (C) 1993 Douglas Lee Schales, David K. Hess, David R. Safford
+#
+#     Please see the file `COPYING' for the complete copyright notice.
+#
+# SunOS/5/gen_services - 06/14/93
+#
+#-----------------------------------------------------------------------------
+#
+
+inputs="`
+$GREP '^services' /etc/nsswitch.conf |
+$AWK '{
+       for(i=2;i<=NF;i++)
+          print $i
+      }'
+`"
+
+for source in $inputs
+do
+  case "$source" in
+    files)
+           [ -r /etc/services ] && {
+	     $SED -e 's/#.*$//' /etc/services |
+	     $SED -e '/^[ \t]*$/d' > $WORKDIR/etc_services.$$
+	     echo "/etc/services" > $WORKDIR/etc_services.$$.src
+	     echo "$WORKDIR/etc_services.$$"
+	   }
+	 ;;
+    nis)
+           [ -n "$YPCAT" ] && {
+	     $YPCAT services > $WORKDIR/nis_services.$$
+	     echo "NIS" > $WORKDIR/nis_services.$$.src
+	     echo "$WORKDIR/nis_services.$$"
+	   } 2>/dev/null
+	 ;;
+    nisplus)
+           [ -n "$NISCAT" ] && {
+	     if $NISCAT services.org_dir > $WORKDIR/nisplus_services.$$; then
+	       echo "NIS+" > $WORKDIR/nisplus_services.$$.src
+	       echo "$WORKDIR/nisplus_services.$$"
+	     else
+	       $RM -f $WORKDIR/nisplus_services.$$
+	     fi
+	   } 2>/dev/null
+	 ;;
+    *)
+         ;;
+  esac
+done

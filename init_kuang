@@ -1,0 +1,21 @@
+#!/bin/csh
+#
+#
+./clearfiles
+#
+cat >uids.k <<END
+RHOSTS
+OTHERS
+END
+
+# Directly accessible group IDs.
+# This usually includes a group like 'users', which most users are in.
+#
+cat >gids.k <<END
+users
+END
+#
+# Setup the primary goal(s).
+#
+echo Setting up goal						#>/dev/tty
+#./addto uids zen DO ANYTHING 

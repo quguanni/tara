@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# Silent grep for those that don't have it... sigh
+#
+
+x=`$EGREP $* | $TAIL -1`
+
+stat=1
+[ -n "$x" ] && stat=0
+
+exit $stat
+

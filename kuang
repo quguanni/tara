@@ -1,0 +1,229 @@
+# commands used....
+SH=/bin/sh
+MV=/bin/mv
+TEST=/usr/bin/test
+ECHO=/bin/echo
+AWK=/bin/awk
+RM=/bin/rm
+
+# Initialization.
+$SH ./init_kuang
+
+# Main loop
+#
+$ECHO Starting main loop  #>/dev/tty
+
+
+while $TEST -f uids.n -o -f gids.n -o -f files.n
+ do
+    ######## USER #############
+    if $TEST -f uids.n ; then
+        $MV uids.n uids.x
+
+	# Process a list of uids from stdin.
+	# Usage: douids username comments
+   	$ECHO Called do_uids                 #>/dev/tty
+    	i=1
+    	while $TEST "1"
+        do
+        	nextuid=`$AWK '{if (NR=="'$i'") print $0}' uids.x`
+        	i=`expr $i + 1`
+
+        	if $TEST -z "$nextuid"  ; then  break;
+	    	fi
+
+            	user=`$ECHO $nextuid | $AWK '{print $1}'`
+
+        	$ECHO "   " User $user                    #>/dev/tty
+
+		# Rules mapping uids to files.
+		#
+        	next=`$ECHO $nextuid | $AWK '{for (i=2;i<=NF;i++) printf("%s ", $i)}'`
+        	./addto files /etc/passwd replace grant $user $next
+        	#./addto files /usr/lib/aliases replace trojan $user $next
+        	./addto files /etc/aliases replace trojan $user $next
+
+		#get the home dir of user
+        	hsh=`./tilde $user`
+		
+		####################################################
+		## This part looks at the content of rhosts file
+		## and report warning to file Succcess
+		##
+        	if $TEST -f $hsh/.rhosts ;  then
+		    ./addto files $hsh/.rhosts write grant $user $next
+		    lines=1
+		    while $TEST "1"
+	            do
+	        	rline=`$AWK '{if (NR=="'$lines'") print $0}' $hsh/.rhosts`
+	        	#rline=`$AWK '{if (NR=="'$lines'") print $0}' rhosts`
+			lines=`expr $lines + 1`
+
+			if $TEST -z "$rline"; then
+				break;
+			fi
+
+        		r_user=`$ECHO $rline | $AWK '{print $2}'`
+        		r_machine=`$ECHO $rline | $AWK '{print $1}'`
+
+			if $TEST -z "$r_user"; then	## if user field is empty, use string USER instead
+			    ./addto uids "RHOSTS" USERS@$r_machine allow rlogin! grant $user $next
+			else
+            		    ./addto uids "RHOSTS" $r_user@$r_machine allow rlogin! grant $user $next
+			fi
+		    done
+        	fi
+
+		####################################################
+
+        	if $TEST "$user" != "root" ;  then
+            		./addto files /etc/hosts.equiv replace allow rlogin $next
+        	fi
+
+        	if $TEST "$user" != "root" -a -f /etc/hosts.equiv -a -s /etc/hosts.equiv 
+                then
+             		./addto files /etc/hosts replace fake HostAddress $next
+        	fi
+
+    	done
+    fi
+
+ 	######## GROUP #############
+
+ 	if $TEST -f gids.n ; then
+       	    $MV gids.n gids.x
+
+    	    $ECHO Called dogids                        #>/dev/tty
+    	    i=1
+    	    while $TEST "1"
+    	    do
+        	nextgid=`$AWK '{if (NR=="'$i'") print $0}' gids.x`
+        	i=`expr $i + 1`
+
+        	if $TEST -z "$nextgid" ; then
+           		break;
+		fi
+
+        	group=`$ECHO $nextgid | $AWK '{print $1}'`
+        	$ECHO "   " Group $group                    #>/dev/tty
+
+        	#############################
+    		# Rules mapping gids to uids.
+    		############################# 
+        	next=`$ECHO $nextgid | $AWK '{for (i=2;i<=NF;i++) printf("%s ", $i)}'`
+        	use=`./members $group`
+        	for user in $use
+         	do
+            		./addto uids $user grant $group $next
+         	done
+
+        	#############################
+		# Rules mapping gids to files.
+        	#############################
+        	./addto files /etc/group replace grant $group $next
+    	   done
+ 	fi
+
+	######### FILES ##########  
+	if $TEST -f files.n ; then
+	       	$MV files.n files.x
+
+	   # A list of file names is read from successive lines of stdin.
+	   # Each file is examined for ways to access it.
+	   # The input format is:
+	   #    <filename> <whitespace> <mode> <comments>
+	   # The <mode> is either "write" or "replace".
+	   # 
+    	   $ECHO Called dofiles.                        #>/dev/tty
+    	   i=1
+    	   while $TEST "1" ###################
+           do
+        	nextfile=`$AWK '{if (NR=='"$i"') print $0}' files.x`
+        	i=`expr $i + 1`
+        	if $TEST -z "$nextfile" ; then
+            		break;
+	    	fi
+
+        	file=`$ECHO $nextfile | $AWK '{print $1}'`
+        	mode=`$ECHO $nextfile | $AWK '{print $2}'`
+
+        	$ECHO "    File $file, mode $mode"            #>/dev/tty
+
+		# Rules converting filename goals into UserName or GroupName goals.
+		#
+        	next=`$ECHO $nextfile | $AWK '{for (i=3;i<=NF;i++) printf("%s ", $i)}'`
+
+        	writers=`./filewriters $file`
+        	numwriters=`$ECHO $writers | $AWK '{print NF}'`
+            	
+        	if $TEST "$numwriters" = "3" ; then
+            		owner=`$ECHO $writers | $AWK '{print $1}'`
+            		group=`$ECHO $writers | $AWK '{print $2}'`
+            		other=`$ECHO $writers | $AWK '{print $3}'`
+
+            		$ECHO "        Writers are $owner $group $other"  #>/dev/tty
+                	./addto uids $owner $mode $file $next
+            		
+			if $TEST "$group" != "NONE" ; then
+                		./addto gids $group $mode $file $next
+            		fi
+
+            		if $TEST "$other" != "NONE" ; then
+                		./addto uids $other $mode $file $next
+
+            		fi
+        		else
+            			$ECHO "        $file does not exist"      #>/dev/tty
+            		continue
+        		fi
+
+		# Rules converting filename goals into other filename goals.
+		#
+        	if $TEST "$mode" != "replace" ; then
+            	continue
+        	fi
+
+    		parent=`$ECHO $file | $AWK -F/ '{if (NF == 2) {
+		printf("/%s", $1)}
+		else if (NF>2) {for (i=2;i<NF;i++) printf("/%s", $i)} 
+		else printf("")'}`
+
+    		basename=`$ECHO $file | $AWK -F/ '{print $NF}'`
+
+    		$ECHO -n "       " Parent directory is $parent        #>/dev/tty
+    		$ECHO ", " basename is $basename                #>/dev/tty
+    		if $TEST -n "$parent" ; then
+       			./addto files $parent write replace $basename $next
+        	fi
+    	done  ##################
+
+    fi
+
+done
+
+# destroy the evidence.... Need "Success" file for report, though.
+$RM files.? gids.? uids.?
+
+
+# Part 2 will do the followings:
+#
+# 1/ Read Success file and extract RHOSTS users and machines
+#
+# 2/ Append user names belong to the same machine to a file
+#
+# 3/ Put these files into temporary directory temp_dir_
+#
+# 4/ Run server program which does:
+# 	- receive a list of user from client
+#	- generate goal for each user and append goal to init_kuang
+#	- run kuang
+#	- read result from file Success and send back to its client
+#
+# 5/ Run client program which does:
+#	- sends the user file to its server
+#	- reads back the result from each server and append result to file
+#	  Success_server
+
+#./part2
+
+
